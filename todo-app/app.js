@@ -3,6 +3,7 @@ const app = express();
 const { Todo } = require("./models");
 const bodyParser = require("body-parser");
 const path = require("path");
+require('dotenv').config();
 // eslint-disable-next-line no-unused-vars
 const { response } = require("express");
 
