@@ -3,7 +3,9 @@ const app = express();
 const { Todo } = require("./models");
 const bodyParser = require("body-parser");
 const path = require("path");
-require('dotenv').config();
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+require("dotenv").config();
 // eslint-disable-next-line no-unused-vars
 const { response } = require("express");
 
@@ -23,7 +25,6 @@ app.get("/", async (req, res) => {
   }
 });
 
-
 // eslint-disable-next-line no-unused-vars
 app.get("/todos", async (request, response) => {
   try {
@@ -38,12 +39,13 @@ app.get("/todos", async (request, response) => {
 app.post("/todos", async (request, response) => {
   console.log("Body : ", request.body);
   try {
-    const todo = await Todo.addTodo({
+    // eslint-disable-next-line no-unused-vars
+    await Todo.addTodo({
       title: request.body.title,
       dueDate: request.body.dueDate,
       completed: false,
     });
-    return response.json(todo);
+    return response.redirect("/");
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
