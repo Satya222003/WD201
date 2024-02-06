@@ -7,18 +7,87 @@
     <link rel="stylesheet" href="./css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>To-Do Manager</title>
+    <style>
+        /* Add your custom styles here */
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Arial', sans-serif;
+            color: #2d3748;
+        }
+
+        /* Customize the header style */
+        header {
+            background-color: #2a4365;
+            color: #ffffff;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        /* Add your custom styles for the sign-out link */
+        a[href="/signout"] {
+            color: #2a4365;
+            text-decoration: underline;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        /* Customize the form styles */
+        form {
+            margin-bottom: 1rem;
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            margin-right: 0.5rem;
+        }
+
+        button[type="submit"] {
+            background-color: #48bb78;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+
+        /* Customize the Todo container styles */
+        .Todo-Item {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            padding: 0.75rem;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+
+        .trash-icon {
+            color: #e53e3e;
+            cursor: pointer;
+        }
+
+        /* Add your custom styles for the error messages */
+        li {
+            color: #e53e3e;
+            list-style-type: none;
+        }
+    </style>
     <script>
         var token = document
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content");
 
-        function updateTodo(id,status){
+        function updateTodo(id, status){
             fetch(`/todos/${id}`,{
                 method:"put",
                 headers:{"Content-Type":"application/json"},
                 body: JSON.stringify({
-                    completed:status,
-                    "_csrf":token
+                    completed: status,
+                    "_csrf": token
                 })
             })
             .then((res) => {
@@ -34,7 +103,7 @@
                 method:"delete",
                 headers:{"Content-Type":"application/json"},
                 body: JSON.stringify({
-                    "_csrf":token
+                    "_csrf": token
                 })
             })
             .then((res) => {
@@ -55,13 +124,13 @@
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                 <div class="flex gap-2 py-4">
                     <div class="flex-auto">
-                        <input type="text" name="title" placeholder="what's next?" class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm" required/>
+                        <input type="text" name="title" placeholder="What's next?" class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm" required/>
                     </div>
                     <div class="flex-auto">
                         <input type="date" name="dueDate" class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm leading-4" required>
                     </div>
                     <div class="flex-none">
-                        <button type="submit" class="bg-green-600 text-white px-5 py-1.5 rounded font-medium mr-2 mb-2">submit</button>
+                        <button type="submit" class="bg-green-600 text-white px-5 py-1.5 rounded font-medium mr-2 mb-2">Submit</button>
                     </div>
                 </div>
             </form>
