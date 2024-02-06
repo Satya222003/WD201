@@ -1,12 +1,13 @@
-/* eslint-disable no-undef */
+"use strict";
+
 const request = require("supertest");
 const cheerio = require("cheerio");
 
 const db = require("../models/index");
 const app = require("../app");
-const { ensureLoggedIn } = require("connect-ensure-login");
 
 let server, agent;
+
 function extractCsrfToken(res) {
   const $ = cheerio.load(res.text);
   return $("[name=_csrf]").val();
@@ -22,7 +23,7 @@ const login = async (agent, username, password) => {
   });
 };
 
-describe("Todo Application", () => {
+describe("Todo Application", function () {
   beforeAll(async () => {
     await db.sequelize.sync({ force: true });
     server = app.listen(3000, () => {});
@@ -44,7 +45,7 @@ describe("Todo Application", () => {
     res = await agent.post("/users").send({
       firstName: "Test",
       lastName: "User A",
-      email: "user.123@test.com",
+      email: "user.a@test.com",
       password: "12345678",
       _csrf: csrfToken,
     });
@@ -61,7 +62,7 @@ describe("Todo Application", () => {
 
   test("Creates a todo and responds with json at /todos POST endpoint", async () => {
     const agent = request.agent(server);
-    await login(agent, "user.123@test.com", "12345678");
+    await login(agent, "user.a@test.com", "12345678");
     const res = await agent.get("/todos");
     const csrfToken = extractCsrfToken(res);
     const response = await agent.post("/todos").send({
@@ -75,7 +76,7 @@ describe("Todo Application", () => {
 
   test("Marks a todo with given ID as complete", async () => {
     const agent = request.agent(server);
-    await login(agent, "user.123@test.com", "12345678");
+    await login(agent, "user.a@test.com", "12345678");
     let res = await agent.get("/todos");
     let csrfToken = extractCsrfToken(res);
     const response = await agent.post("/todos").send({
@@ -84,7 +85,6 @@ describe("Todo Application", () => {
       completed: false,
       _csrf: csrfToken,
     });
-
     const groupedTodosResponse = await agent
       .get("/todos")
       .set("Accept", "application/json");
@@ -107,7 +107,7 @@ describe("Todo Application", () => {
 
   test("Marks a todo with given ID as incomplete", async () => {
     const agent = request.agent(server);
-    await login(agent, "user.123@test.com", "12345678");
+    await login(agent, "user.a@test.com", "12345678");
     let res = await agent.get("/todos");
     let csrfToken = extractCsrfToken(res);
     const response = await agent.post("/todos").send({
@@ -158,7 +158,7 @@ describe("Todo Application", () => {
 
   test("Deletes a todo with the given ID if it exists and sends a boolean response", async () => {
     const agent = request.agent(server);
-    await login(agent, "user.123@test.com", "12345678");
+    await login(agent, "user.a@test.com", "12345678");
     let res = await agent.get("/todos");
     let csrfToken = extractCsrfToken(res);
     const response = await agent.post("/todos").send({
