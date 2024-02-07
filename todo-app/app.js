@@ -55,18 +55,19 @@ passport.use(
       usernameField: "email",
       passwordField: "password",
     },
-    async (username, password, done) => {
-      try {
-        const user = await User.findOne({ where: { email: username } });
-        const result = await bcrypt.compare(password, user.password);
-        if (result) {
-          return done(null, user);
-        } else {
-          return done(null, false, { message: "Invalid password" });
-        }
-      } catch (error) {
-        return done(null, false, { message: "Invalid E-mail" });
-      }
+    (username, password, done) => {
+      User.findOne({ where: { email: username } })
+        .then(async function (user) {
+          const result = await bcrypt.compare(password, user.password);
+          if (result) {
+            return done(null, user);
+          } else {
+            return done(null, false, { message: "Invalid password" });
+          }
+        })
+        .catch((error) => {
+          return done(null, false, { message: "Invalid E-mail" });
+        });
     },
   ),
 );
@@ -76,13 +77,14 @@ passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findByPk(id);
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
+passport.deserializeUser((id, done) => {
+  User.findByPk(id)
+    .then((user) => {
+      done(null, user);
+    })
+    .catch((error) => {
+      done(error, null);
+    });
 });
 
 app.get("/", async (request, response) => {
@@ -137,15 +139,15 @@ app.post("/users", async (request, response) => {
   const hashedPwd = await bcrypt.hash(request.body.password, saltRounds);
   console.log(hashedPwd);
   const trimmedPassword = request.body.password.trim();
-  // Have to create a user
-  if (request.body.firstName.length === 0) {
-    request.flash("error", "First Name can't be empty");
+  //have to create a todo
+  if (request.body.firstName.length == 0) {
+    request.flash("error", "First Name cant be empty");
     return response.redirect("/signup");
-  } else if (request.body.email.length === 0) {
-    request.flash("error", "Email can't be empty");
+  } else if (request.body.email.length == 0) {
+    request.flash("error", "Email cant be empty");
     return response.redirect("/signup");
-  } else if (trimmedPassword.length === 0) {
-    request.flash("error", "Password cannot be empty");
+  } else if (trimmedPassword.length == 0) {
+    request.flash("error", "password cannot be empty");
     return response.redirect("/signup");
   }
   try {
@@ -199,6 +201,7 @@ app.get("/", function (request, response) {
 });
 
 app.get("/todos", async function (_request, response) {
+  // FILL IN YOUR CODE HERE
   try {
     console.log("Processing list of all Todos ...");
     // Use Sequelize to query the database and get all Todos
@@ -209,6 +212,9 @@ app.get("/todos", async function (_request, response) {
     console.log(error);
     return response.status(500).json({ error: "Internal Server Error" });
   }
+  // First, we have to query our PostgerSQL database using Sequelize to get list of all Todos.
+  // Then, we have to respond with all Todos, like:
+  // response.send(todos)
 });
 
 app.get("/todos/:id", async function (request, response) {
@@ -271,6 +277,8 @@ app.delete(
   "/todos/:id",
   connectEnsureLogin.ensureLoggedIn(),
   async function (request, response) {
+    //console.log("We have to delete a Todo with ID: ", request.params.id);
+    // FILL IN YOUR CODE HERE
     console.log("Deleting a Todo with ID: ", request.params.id);
     const loggedInUser = request.user.id;
     try {
@@ -280,6 +288,9 @@ app.delete(
       console.log(error);
       return response.status(500).json(error);
     }
+    // First, we have to query our database to delete a Todo by ID.
+    // Then, we have to respond back with true/false based on whether the Todo was deleted or not.
+    // response.send(true)
   },
 );
 
